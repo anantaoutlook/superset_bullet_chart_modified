@@ -1,0 +1,5 @@
+bed_type,status,counts,COUNT(*)
+ICU,Occupied,23,1
+General Ward,Occupied,20,1
+General Ward,Available,47,1
+ICU,Available,30,1
