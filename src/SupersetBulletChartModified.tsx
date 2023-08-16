@@ -43,14 +43,14 @@ export default function SupersetBulletChartModified(
   // height and width are the height and width of the DOM element as it exists in the dashboard.
   // There is also a `data` prop, which is, of course, your DATA 🎉
   const { data, height, width } = props;
-
+  const gpId: string = 'graphics' + (Math.floor((Math.random() * 100) + 1));
   // const rootElem = createRef<HTMLDivElement>();
-  const svgRef = createRef<SVGSVGElement>();
+  // const svgRef = createRef<SVGSVGElement>();
 
   // Often, you just want to access the DOM and do whatever you want.
   // Here, you can do that with createRef, and the useEffect hook.
   useEffect(() => {
-    // d3.selectAll('text').remove();
+    d3.select("#graphic").selectAll("svg").remove();
     render();
   }, [props]);
 
@@ -74,14 +74,14 @@ export default function SupersetBulletChartModified(
       .map((d: any) => {
         cumulative += d.counts;
         return {
-          count: d.counts,
+          counts: d.counts,
           cumulative: cumulative,
           bed_type: d.bed_type,
           status: d.status,
           percent: ((d.counts / total) * 100).toFixed(2),
         };
       })
-      .filter((d: any) => d.count > 0);
+      .filter((d: any) => d.counts > 0);
     return _data;
   };
 
@@ -98,7 +98,7 @@ export default function SupersetBulletChartModified(
 
     // total value
     let total = d3.sum(data, (d: any) => d.counts);
-
+    console.log('data', data);
     let _data = groupData(data, total);
     const sum = _data.reduce(
       (sum: any, value: any) => sum + parseFloat(value.percent),
@@ -111,7 +111,7 @@ export default function SupersetBulletChartModified(
       const percentagePerItem = remainPercentage / _data.length;
       _data = _data.map((d: any) => {
         return {
-          counts: d.count,
+          counts: d.counts,
           cumulative: d.cumulative,
           bed_type: d.bed_type,
           status: d.status,
@@ -123,7 +123,9 @@ export default function SupersetBulletChartModified(
     // set up scales for horizontal placement
     // d3.select('svg').remove();
     const selection = d3
-      .select(svgRef.current)
+      .select("#"+ gpId)
+      .append("svg")
+      // .attr("id")
       .attr("width", w)
       .attr("height", height)
       .append("g")
@@ -135,7 +137,7 @@ export default function SupersetBulletChartModified(
 
     // stack rect for each data value
     console.log('_data', _data);
-    d3.selectAll("rect").remove();
+    // d3.selectAll("rect").remove();
     selection
       .selectAll("rect")
       .data(_data)
@@ -169,7 +171,7 @@ export default function SupersetBulletChartModified(
   };
 
   const drawLegends = (selection: any, le: any, h: number) => {
-    d3.selectAll(".legend-title").remove();
+    // d3.selectAll(".legend-title").remove();
     selection
       .append("text")
       .attr("class", "legend-title")
@@ -185,7 +187,8 @@ export default function SupersetBulletChartModified(
       (sum: any, value: any) => sum + parseFloat(value.counts),
       0
     );
-    d3.selectAll(".legend-title-count").remove();
+    console.log('sum', sum);
+    // d3.selectAll(".legend-title-count").remove();
     selection
       .append("text")
       .attr("class", "legend-title-count")
@@ -199,7 +202,7 @@ export default function SupersetBulletChartModified(
 
     // legends shape
     let size = 25;
-    d3.selectAll("circle").remove();
+    // d3.selectAll("circle").remove();
     selection
       .selectAll("circle")
       .data(le.data)
@@ -211,7 +214,7 @@ export default function SupersetBulletChartModified(
       .attr("cy", (d: any, i: number) => h / 2 + i * size);
 
     // legends label
-    d3.selectAll(".legend-labels").remove();
+    // d3.selectAll(".legend-labels").remove();
     selection
       .selectAll(".legend-labels")
       .data(le.data)
@@ -228,7 +231,7 @@ export default function SupersetBulletChartModified(
       .style("alignment-baseline", "middle");
 
     // count labels
-    d3.selectAll(".legend-labels-count").remove();
+    // d3.selectAll(".legend-labels-count").remove();
     selection
       .selectAll(".legend-labels-count")
       .data(le.data)
@@ -251,7 +254,7 @@ export default function SupersetBulletChartModified(
 
   return (
     <div>
-      <svg ref={svgRef}></svg>
+      <div id={gpId}></div>
     </div>
   );
 }
