@@ -26,7 +26,7 @@ import { SupersetBulletChartModified } from '../src';
  * treated correctly (e.g. formData from plugin controls
  * properly transform the data and/or any resulting props).
  */
-describe('superset-bullet-chart-modified', () => {
+describe('superset_bullet_chart_modified', () => {
   it('exists', () => {
     expect(SupersetBulletChartModified).toBeDefined();
   });

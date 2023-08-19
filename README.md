@@ -1,4 +1,4 @@
-# superset-bullet-chart-modified
+# superset_bullet_chart_modified
 
 This is the Superset Bullet Chart Modified Superset Chart Plugin.
 
@@ -17,20 +17,20 @@ Alternatively, to run the plugin in development mode (=rebuilding whenever chang
 npm run dev
 ```
 
-To add the package to Superset, go to the `superset-frontend` subdirectory in your Superset source folder (assuming both the `superset-bullet-chart-modified` plugin and `superset` repos are in the same root directory) and run
+To add the package to Superset, go to the `superset-frontend` subdirectory in your Superset source folder (assuming both the `superset_bullet_chart_modified` plugin and `superset` repos are in the same root directory) and run
 ```
-npm i -S ../../superset-bullet-chart-modified
+npm i -S ../../superset_bullet_chart_modified
 ```
 
 After this edit the `superset-frontend/src/visualizations/presets/MainPreset.js` and make the following changes:
 
 ```js
-import { SupersetBulletChartModified } from 'superset-bullet-chart-modified';
+import { SupersetBulletChartModified } from 'superset_bullet_chart_modified';
 ```
 
 to import the plugin and later add the following to the array that's passed to the `plugins` property:
 ```js
-new SupersetBulletChartModified().configure({ key: 'superset-bullet-chart-modified' }),
+new SupersetBulletChartModified().configure({ key: 'superset_bullet_chart_modified' }),
 ```
 
 After that the plugin should show up when you run Superset, e.g. the development server:

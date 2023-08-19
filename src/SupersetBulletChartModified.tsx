@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useEffect, createRef } from "react";
-import { SupersetBulletChartModifiedProps } from "./types";
+import React, { useEffect } from "react";
 import * as d3 from "d3";
+import { SupersetBulletChartModifiedProps } from "./types";
 
 // The following Styles component is a <div> element, which has been styled using Emotion
 // For docs, visit https://emotion.sh/docs/styled
@@ -43,7 +43,7 @@ export default function SupersetBulletChartModified(
   // height and width are the height and width of the DOM element as it exists in the dashboard.
   // There is also a `data` prop, which is, of course, your DATA 🎉
   const { data, height, width } = props;
-  const gpId: string = 'graphics' + (Math.floor((Math.random() * 100) + 1));
+  const gpId = `graphics${(Math.floor((Math.random() * 100) + 1))}`;
   // const rootElem = createRef<HTMLDivElement>();
   // const svgRef = createRef<SVGSVGElement>();
 
@@ -70,19 +70,19 @@ export default function SupersetBulletChartModified(
   const groupData = (data: any, total: any) => {
     let cumulative = 0;
     const newData = data.filter((d: any) => d.bed_type === uniqueBedTypes[0]);
-    const _data = newData
+    const returnData = newData
       .map((d: any) => {
         cumulative += d.counts;
         return {
           counts: d.counts,
-          cumulative: cumulative,
+          cumulative,
           bed_type: d.bed_type,
           status: d.status,
           percent: ((d.counts / total) * 100).toFixed(2),
         };
       })
       .filter((d: any) => d.counts > 0);
-    return _data;
+    return returnData;
   };
 
   const drawHorizontalStackBar = () => {
@@ -97,10 +97,9 @@ export default function SupersetBulletChartModified(
     const halfBarHeight = barHeight;
 
     // total value
-    let total = d3.sum(data, (d: any) => d.counts);
-    console.log('data', data);
-    let _data = groupData(data, total);
-    const sum = _data.reduce(
+    const total = d3.sum(data, (d: any) => d.counts);
+    let groupedData = groupData(data, total);
+    const sum = groupedData.reduce(
       (sum: any, value: any) => sum + parseFloat(value.percent),
       0
     );
@@ -108,51 +107,50 @@ export default function SupersetBulletChartModified(
     let remainPercentage = 0;
     if (sum < 100) {
       remainPercentage = 100 - sum;
-      const percentagePerItem = remainPercentage / _data.length;
-      _data = _data.map((d: any) => {
-        return {
+      const percentagePerItem = remainPercentage / groupedData.length;
+      groupedData = groupedData.map((d: any) =>({
           counts: d.counts,
           cumulative: d.cumulative,
           bed_type: d.bed_type,
           status: d.status,
           percent: parseFloat(d.percent) + percentagePerItem,
-        };
-      });
+        })
+      );
     }
 
     // set up scales for horizontal placement
     // d3.select('svg').remove();
     const selection = d3
-      .select("#"+ gpId)
+      .select(`#${gpId}`)
       .append("svg")
       // .attr("id")
       .attr("width", w)
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", `translate( ${margin.left}, ${margin.top})`);
 
     // const xScale = d3Scale.scaleLinear().domain([0, total]).range([0, w]);
     // const max: any = d3.max(_data, (d: any) => d.counts)!;
     // const xScale = d3Scale.scaleLinear().domain([0, max]).range([0, width]);
 
     // stack rect for each data value
-    console.log('_data', _data);
+    console.log('groupedData', groupedData);
     // d3.selectAll("rect").remove();
     selection
       .selectAll("rect")
-      .data(_data)
+      .data(groupedData)
       .enter()
       .append("rect")
       .attr("class", "rect-stacked")
-      .attr("x", (d: any, i: number) => i === 0 ? 0 : _data[i -1 ].percent + '%')
+      .attr("x", (d: any, i: number) => i === 0 ? 0 : `${groupedData[i -1 ].percent}%`)
       .attr("y", h / 2 - halfBarHeight)
       .attr("rx", (d: any, i: number) => (i === 0 ? 5 : 0))
-      .attr("ry", (d: any, i: number) => (i === _data.length - 1 ? 5 : 0))
+      .attr("ry", (d: any, i: number) => (i === groupedData.length - 1 ? 5 : 0))
       .attr("height", barHeight)
-      .attr('width', (d: any, i: number) => d.percent + '%')
+      .attr('width', (d: any, i: number) => `${d.percent}%`)
       .style("fill", (d, i) => customColors[i]);
 
-    const legendsData = prepareLegendData(_data);
+    const legendsData = prepareLegendData(groupedData);
     drawLegends(selection, legendsData[0], height);
   };
 
@@ -201,7 +199,7 @@ export default function SupersetBulletChartModified(
       .attr("fill", "#000000");
 
     // legends shape
-    let size = 25;
+    const size = 25;
     // d3.selectAll("circle").remove();
     selection
       .selectAll("circle")
@@ -254,7 +252,7 @@ export default function SupersetBulletChartModified(
 
   return (
     <div>
-      <div id={gpId}></div>
+      <div id={gpId}/>
     </div>
   );
 }
